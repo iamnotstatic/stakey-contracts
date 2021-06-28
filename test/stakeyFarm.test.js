@@ -81,6 +81,7 @@ describe('StakeyFarm', () => {
         .approve(stakeyFarm.address, '100000000000000000000');
       await stakeyFarm.connect(addr1).stakeTokens('100000000000000000000');
 
+      // Check result after staking
       result = await dai.balanceOf(addr1.address);
       expect(result.toString()).to.equal('0');
 
@@ -93,6 +94,7 @@ describe('StakeyFarm', () => {
       result = await stakeyFarm.isStaking(addr1.address);
       expect(result.toString()).to.equal('true');
 
+      // Issue tokens test
       await stakeyFarm.connect(owner).issueTokens();
 
       const balance = await stakeyToken.balanceOf(addr1.address);
@@ -102,6 +104,22 @@ describe('StakeyFarm', () => {
       await expect(stakeyFarm.connect(addr1).issueTokens()).to.be.revertedWith(
         'Ownable: caller is not the owner'
       );
+
+      // Unstake tokens
+      await stakeyFarm.connect(addr1).unstakeTokens();
+
+      // Check result after unstaking
+      result = await dai.balanceOf(addr1.address);
+      expect(result.toString(), '100000000000000000000');
+
+      result = await dai.balanceOf(stakeyFarm.address);
+      expect(result.toString(), '0');
+
+      result = await stakeyFarm.stakingBalance(addr1.address);
+      expect(result.toString(), '0');
+
+      result = await stakeyFarm.isStaking(addr1.address);
+      expect(result.toString(), 'false');
     });
   });
 });
