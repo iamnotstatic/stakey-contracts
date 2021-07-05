@@ -12,6 +12,9 @@ contract StakeyFarm is Ownable {
     mapping(address => bool) public hasStaked;
     mapping(address => bool) public isStaking;
 
+    uint256 public _taxFee = 1;
+    uint256 public wpr = 8;
+
     ERC20 public dai;
     ERC20 public stakeyToken;
 
@@ -20,20 +23,27 @@ contract StakeyFarm is Ownable {
         stakeyToken = ERC20(_stakeyToken);
     }
 
-    function stakeTokens(uint256 _amount) public {
+    event Deposit(address indexed account, uint256 amount);
+    event Withdraw(address indexed account, uint256 amount);
+
+    function deposit(uint256 _amount) public {
         require(_amount > 0, "invalid amount");
+
+        uint256 value = (_amount / 100) * _taxFee;
 
         dai.transferFrom(_msgSender(), address(this), _amount);
 
-        stakingBalance[_msgSender()] += _amount;
+        stakingBalance[_msgSender()] += _amount - value;
 
         if (!hasStaked[_msgSender()]) stakers.push(_msgSender());
 
         isStaking[_msgSender()] = true;
         hasStaked[_msgSender()] = true;
+
+        emit Deposit(_msgSender(), _amount - value);
     }
 
-    function unstakeTokens() public {
+    function withdraw() public {
         uint256 balance = stakingBalance[_msgSender()];
 
         require(balance > 0, "Staking balance cannot be 0");
@@ -44,15 +54,15 @@ contract StakeyFarm is Ownable {
 
         isStaking[_msgSender()] = false;
 
-        
+        emit Withdraw(_msgSender(), balance);
     }
 
     function issueTokens() public onlyOwner {
         for (uint256 i = 0; i < stakers.length; i++) {
             address recipient = stakers[i];
-            uint256 balance = stakingBalance[recipient];
+            uint256 earns = stakingBalance[recipient] / 100 * wpr;
 
-            if (balance > 0) stakeyToken.transfer(recipient, balance);
+            if (earns > 0) stakeyToken.transfer(recipient, earns);
         }
     }
 }
