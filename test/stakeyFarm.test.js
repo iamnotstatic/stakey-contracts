@@ -79,17 +79,22 @@ describe('StakeyFarm', () => {
       await dai
         .connect(addr1)
         .approve(stakeyFarm.address, '100000000000000000000');
-      await stakeyFarm.connect(addr1).stakeTokens('100000000000000000000');
+      await stakeyFarm.connect(addr1).deposit('100000000000000000000');
 
       // Check result after staking
       result = await dai.balanceOf(addr1.address);
       expect(result.toString()).to.equal('0');
 
       result = await dai.balanceOf(stakeyFarm.address);
-      expect(result.toString()).to.equal('100000000000000000000');
+      expect(result.toString()).to.equal('99000000000000000000');
+
+      result = await dai.balanceOf(
+        '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC'
+      );
+      expect(result.toString()).to.equal('1000000000000000000');
 
       result = await stakeyFarm.stakingBalance(addr1.address);
-      expect(result.toString()).to.equal('100000000000000000000');
+      expect(result.toString()).to.equal('99000000000000000000');
 
       result = await stakeyFarm.isStaking(addr1.address);
       expect(result.toString()).to.equal('true');
@@ -99,18 +104,18 @@ describe('StakeyFarm', () => {
 
       const balance = await stakeyToken.balanceOf(addr1.address);
 
-      expect(balance.toString()).to.equal('100000000000000000000');
+      expect(balance.toString()).to.equal('7920000000000000000');
 
       await expect(stakeyFarm.connect(addr1).issueTokens()).to.be.revertedWith(
         'Ownable: caller is not the owner'
       );
 
-      // Unstake tokens
-      await stakeyFarm.connect(addr1).unstakeTokens();
+      // withdraw tokens
+      await stakeyFarm.connect(addr1).withdraw();
 
       // Check result after unstaking
       result = await dai.balanceOf(addr1.address);
-      expect(result.toString(), '100000000000000000000');
+      expect(result.toString(), '99000000000000000000');
 
       result = await dai.balanceOf(stakeyFarm.address);
       expect(result.toString(), '0');
@@ -120,6 +125,18 @@ describe('StakeyFarm', () => {
 
       result = await stakeyFarm.isStaking(addr1.address);
       expect(result.toString(), 'false');
+    });
+  });
+
+  describe('Set fee address', async () => {
+    it('Set a fee address', async () => {
+      await stakeyFarm.connect(owner).setFeeAddress(owner.address);
+    });
+
+    it('throw error if not owner', async () => {
+      await expect(
+        stakeyFarm.connect(addr1).setFeeAddress(owner.address)
+      ).to.be.revertedWith('Ownable: caller is not the owner');
     });
   });
 });

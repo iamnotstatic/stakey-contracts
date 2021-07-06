@@ -1,16 +1,24 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+
 
 contract StakeyFarm is Ownable {
+    using SafeERC20 for ERC20;
+    using SafeMath for uint256;
+
     string public name = "Stakey Farm";
 
     address[] public stakers;
     mapping(address => uint256) public stakingBalance;
     mapping(address => bool) public hasStaked;
     mapping(address => bool) public isStaking;
+
+    address public feeAddress = 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC;
 
     uint256 public _taxFee = 1;
     uint256 public wpr = 8;
@@ -31,16 +39,20 @@ contract StakeyFarm is Ownable {
 
         uint256 value = (_amount / 100) * _taxFee;
 
-        dai.transferFrom(_msgSender(), address(this), _amount);
+        dai.safeTransferFrom(_msgSender(), address(this), _amount.sub(value));
 
-        stakingBalance[_msgSender()] += _amount - value;
+        dai.safeTransferFrom(_msgSender(), feeAddress, value);
+
+        stakingBalance[_msgSender()] = stakingBalance[_msgSender()]
+        .add(_amount)
+        .sub(value);
 
         if (!hasStaked[_msgSender()]) stakers.push(_msgSender());
 
         isStaking[_msgSender()] = true;
         hasStaked[_msgSender()] = true;
 
-        emit Deposit(_msgSender(), _amount - value);
+        emit Deposit(_msgSender(), _amount.sub(value));
     }
 
     function withdraw() public {
@@ -50,7 +62,7 @@ contract StakeyFarm is Ownable {
 
         stakingBalance[_msgSender()] = 0;
 
-        dai.transfer(_msgSender(), balance);
+        dai.safeTransfer(_msgSender(), balance);
 
         isStaking[_msgSender()] = false;
 
@@ -60,9 +72,13 @@ contract StakeyFarm is Ownable {
     function issueTokens() public onlyOwner {
         for (uint256 i = 0; i < stakers.length; i++) {
             address recipient = stakers[i];
-            uint256 earns = stakingBalance[recipient] / 100 * wpr;
+            uint256 earns = (stakingBalance[recipient] / 100) * wpr;
 
             if (earns > 0) stakeyToken.transfer(recipient, earns);
         }
+    }
+
+    function setFeeAddress(address _feeAddress) public onlyOwner {
+        feeAddress = _feeAddress;
     }
 }
