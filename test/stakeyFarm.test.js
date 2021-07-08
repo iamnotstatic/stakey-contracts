@@ -111,7 +111,11 @@ describe('StakeyFarm', () => {
       );
 
       // withdraw tokens
-      await stakeyFarm.connect(addr1).withdraw();
+      await stakeyFarm.connect(addr1).withdraw('20000000000000000000');
+
+      await expect(
+        stakeyFarm.connect(addr1).withdraw('100000000000000000000')
+      ).to.be.revertedWith('amount cannot be greater than staking balance');
 
       // Check result after unstaking
       result = await dai.balanceOf(addr1.address);

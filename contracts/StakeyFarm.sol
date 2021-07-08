@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
+import "hardhat/console.sol";
 
 contract StakeyFarm is Ownable {
     using SafeERC20 for ERC20;
@@ -55,18 +56,20 @@ contract StakeyFarm is Ownable {
         emit Deposit(_msgSender(), _amount.sub(value));
     }
 
-    function withdraw() public {
+    function withdraw(uint256 _amount) public {
         uint256 balance = stakingBalance[_msgSender()];
 
-        require(balance > 0, "Staking balance cannot be 0");
+        require(_amount > 0, "amount cannot be 0");
+        require(balance >= _amount , "amount cannot be greater than staking balance");
 
-        stakingBalance[_msgSender()] = 0;
+        stakingBalance[_msgSender()].sub(_amount);
 
-        dai.safeTransfer(_msgSender(), balance);
+        dai.safeTransfer(_msgSender(), _amount);
 
-        isStaking[_msgSender()] = false;
+        if (stakingBalance[_msgSender()].sub(_amount) <= 0)
+            isStaking[_msgSender()] = false;
 
-        emit Withdraw(_msgSender(), balance);
+        emit Withdraw(_msgSender(), _amount);
     }
 
     function issueTokens() public onlyOwner {
