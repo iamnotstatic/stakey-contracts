@@ -89,7 +89,7 @@ describe('StakeyFarm', () => {
       expect(result.toString()).to.equal('99000000000000000000');
 
       result = await dai.balanceOf(
-        '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC'
+        '0xbDA5747bFD65F08deb54cb465eB87D40e51B197E'
       );
       expect(result.toString()).to.equal('1000000000000000000');
 
@@ -111,7 +111,7 @@ describe('StakeyFarm', () => {
       );
 
       // withdraw tokens
-      await stakeyFarm.connect(addr1).withdraw('20000000000000000000');
+      await stakeyFarm.connect(addr1).withdraw('99000000000000000000');
 
       await expect(
         stakeyFarm.connect(addr1).withdraw('100000000000000000000')

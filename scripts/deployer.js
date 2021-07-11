@@ -20,7 +20,7 @@ const main = async () => {
   await farm.deployed();
 
   // Transfer All token to farm
-  await token.transfer(farm.address, '1000000000000000000000000');
+  await token.transfer(farm.address, '800000000000000000000000');
 
   console.log(`Token address: ${token.address}`);
   console.log(`Farm address: ${farm.address}`);

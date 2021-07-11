@@ -19,7 +19,7 @@ contract StakeyFarm is Ownable {
     mapping(address => bool) public hasStaked;
     mapping(address => bool) public isStaking;
 
-    address public feeAddress = 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC;
+    address public feeAddress = 0x3E4E4B61a2f4Fac6f9706f66A78aA9E01c78a5cb;
 
     uint256 public _taxFee = 1;
     uint256 public wpr = 8;
@@ -60,14 +60,20 @@ contract StakeyFarm is Ownable {
         uint256 balance = stakingBalance[_msgSender()];
 
         require(_amount > 0, "amount cannot be 0");
-        require(balance >= _amount , "amount cannot be greater than staking balance");
+        require(
+            balance >= _amount,
+            "amount cannot be greater than staking balance"
+        );
 
-        stakingBalance[_msgSender()].sub(_amount);
+        uint256 withdrawAmount = stakingBalance[_msgSender()].sub(_amount);
+
+        stakingBalance[_msgSender()] = stakingBalance[_msgSender()].sub(
+            _amount
+        );
 
         dai.safeTransfer(_msgSender(), _amount);
 
-        if (stakingBalance[_msgSender()].sub(_amount) <= 0)
-            isStaking[_msgSender()] = false;
+        if (withdrawAmount <= 0) isStaking[_msgSender()] = false;
 
         emit Withdraw(_msgSender(), _amount);
     }
