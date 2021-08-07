@@ -9,7 +9,7 @@ Yield farm, Stake DAI and earn Stakey token based on stake amount.
 
 </div>
 
-## Running Smart Contract with Truffle and ganache blockchain locally
+## Running Smart Contract with Hardhat and Waffle
 
 ```bash
 # Clone Repo
