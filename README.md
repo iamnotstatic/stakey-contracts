@@ -1,11 +1,11 @@
 
 <div align="center">
 
-## Voteric 🚀🚀
+## Stakey 🚀🚀
 
 [![Pull Requests Welcome](https://img.shields.io/badge/PRs-welcome-red.svg?style=flat)](http://makeapullrequest.com)
 
-Voteric is a decentralized voting application
+Yield farm, Stake DAI and earn Stakey token weekly based on stake amount.
 
 </div>
 
@@ -13,36 +13,21 @@ Voteric is a decentralized voting application
 
 ```bash
 # Clone Repo
-$ git clone `https://github.com/iamnotstatic/voteric.git`
+$ git clone `https://github.com/iamnotstatic/stakey-contracts`
 
 ```
 
-### Connecting to Ganache and compiling contract
+### Connecting to hardhat and compiling contract
 
 ```bash
-# Connect to ganache blockchain
-$ ganache-cli -a
+# Compile contracts
+$ npx hardhat compile
 
-# Run Migration and deploy to local blockchain
-$ truffle migrate
-
-# Run test
-$ truffle test
+# npx hardhat test
+$ npx hardhat test
 
 ```
 
-## Starting the Frontend
-```bash
-# CD to the client directory
-$ cd client
-
-# Install Dependencies
-$ yarn install
-
-# Lunch the project
-$ yarn start
-
-```
 # Author 💖
 
 [Abdulfatai Suleiman](https://twitter.com/iamnotstatic)!
