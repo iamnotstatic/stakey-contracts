@@ -5,7 +5,7 @@
 
 [![Pull Requests Welcome](https://img.shields.io/badge/PRs-welcome-red.svg?style=flat)](http://makeapullrequest.com)
 
-Yield farm, Stake DAI and earn Stakey token weekly based on stake amount.
+Yield farm, Stake DAI and earn Stakey token based on stake amount.
 
 </div>
 
