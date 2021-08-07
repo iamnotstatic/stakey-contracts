@@ -26,6 +26,9 @@ $ npx hardhat compile
 # npx hardhat test
 $ npx hardhat test
 
+# Deploy on testnet
+npx hardhat run --network rinkeby scripts/deployer.js
+
 ```
 
 # Author 💖
