@@ -1,7 +1,7 @@
 
 <div align="center">
 
-## Stakey 🚀🚀
+## Stakey Contracts 🚀🚀
 
 [![Pull Requests Welcome](https://img.shields.io/badge/PRs-welcome-red.svg?style=flat)](http://makeapullrequest.com)
 
